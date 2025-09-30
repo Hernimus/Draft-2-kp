@@ -1,0 +1,48 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block admin_content %}
+    <h2>Cari di Katalog Admin</h2>
+    <p>Gunakan form di bawah ini untuk mencari data buku di dalam katalog.</p>
+
+    <form method="get" class="mt-4">
+        <div class="input-group mb-3">
+            <input type="text" name="q" class="form-control" placeholder="Cari berdasarkan judul, pengarang, atau ISBN..." value="{{ query or '' }}">
+            <button class="btn btn-primary" type="submit">Cari</button>
+        </div>
+    </form>
+
+    {% if query %}
+        <hr>
+        {% if hasil_pencarian %}
+            <p class="text-muted">Menemukan <strong>{{ hasil_pencarian|length }}</strong> buku yang cocok.</p>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Judul Buku</th>
+                        <th>Pengarang</th>
+                        <th>Rak</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for buku in hasil_pencarian %}
+                    <tr>
+                        <td>{{ buku['id'] }}</td>
+                        <td>{{ buku['judul_buku'] }}</td>
+                        <td>{{ buku['pengarang'] }}</td>
+                        <td>{{ buku['rak_buku'] }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.edit_buku', buku_id=buku['id']) }}" class="btn btn-warning btn-sm">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-warning">
+                Tidak ada hasil yang ditemukan untuk pencarian '{{ query }}'.
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Hasil Pencarian{% endblock %}
+{% block content %}
+    <h2>Hasil Pencarian untuk: "<em class="text-primary">{{ query }}</em>"</h2>
+    <a href="{{ url_for('public.halaman_utama') }}" class="btn btn-secondary mt-2 mb-4">&larr; Lakukan Pencarian Baru</a>
+
+    {% if hasil_pencarian %}
+        <p class="text-muted">Menemukan <strong>{{ hasil_pencarian|length }}</strong> buku yang cocok.</p>
+        <div class="list-group">
+            {% for buku in hasil_pencarian %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ buku['judul_buku'] }}</h5>
+                        <span class="badge bg-primary rounded-pill">lihat</span>
+                    </div>
+                    <p class="mb-1"><strong>Pengarang:</strong> {{ buku['pengarang'] or 'Tidak diketahui' }}</p>
+                    <small class="text-muted">
+                        <strong>Penerbit:</strong> {{ buku['penerbit'] or '-' }} | 
+                        <strong>Tahun:</strong> {{ buku['tahun'] or '-' }} | 
+                        <strong>Rak:</strong> {{ buku['rak_buku'] or '-' }}
+                    </small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning mt-4">Maaf, tidak ada buku yang cocok.</div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Tambah Buku Baru{% endblock %}
+{% block admin_content %}
+    <h2>Tambah Buku Baru</h2>
+    <hr>
+    <form method="post" class="row g-3">
+        <div class="col-md-12"><label for="judul_buku" class="form-label">Judul Buku</label><input type="text" class="form-control" name="judul_buku" required></div>
+        <div class="col-md-6"><label for="pengarang" class="form-label">Pengarang</label><input type="text" class="form-control" name="pengarang"></div>
+        <div class="col-md-6"><label for="penerbit" class="form-label">Penerbit</label><input type="text" class="form-control" name="penerbit"></div>
+        <div class="col-md-6"><label for="tempat_terbit" class="form-label">Tempat Terbit</label><input type="text" class="form-control" name="tempat_terbit"></div>
+        <div class="col-md-6"><label for="tahun" class="form-label">Tahun</label><input type="text" class="form-control" name="tahun"></div>
+        <div class="col-12"><label for="isbn" class="form-label">ISBN</label><input type="text" class="form-control" name="isbn"></div>
+        <div class="col-md-4"><label for="jilid" class="form-label">Jilid</label><input type="text" class="form-control" name="jilid"></div>
+        <div class="col-md-4"><label for="edisi" class="form-label">Edisi</label><input type="text" class="form-control" name="edisi"></div>
+        <div class="col-md-4"><label for="cetakan" class="form-label">Cetakan</label><input type="text" class="form-control" name="cetakan"></div>
+        <div class="col-md-4"><label for="jumlah_halaman" class="form-label">Jumlah Halaman</label><input type="text" class="form-control" name="jumlah_halaman"></div>
+        <div class="col-md-4"><label for="rak_buku" class="form-label">Rak Buku</label><input type="text" class="form-control" name="rak_buku"></div>
+        <div class="col-md-4"><label for="jumlah_buku" class="form-label">Jumlah Buku</label><input type="text" class="form-control" name="jumlah_buku"></div>
+        <div class="col-md-4"><label for="tinggi_buku" class="form-label">Tinggi Buku (cm)</label><input type="text" class="form-control" name="tinggi_buku"></div>
+        <div class="col-md-4"><label for="nomor_panggil" class="form-label">Nomor Panggil</label><input type="text" class="form-control" name="nomor_panggil"></div>
+        <div class="col-md-4"><label for="inisial" class="form-label">Inisial</label><input type="text" class="form-control" name="inisial"></div>
+        <div class="col-md-4"><label for="perolehan" class="form-label">Perolehan</label><input type="text" class="form-control" name="perolehan"></div>
+        <div class="col-md-4"><label for="harga" class="form-label">Harga</label><input type="text" class="form-control" name="harga"></div>
+        <div class="col-md-4"><label for="keterangan" class="form-label">Keterangan</label><input type="text" class="form-control" name="keterangan"></div>
+        <div class="col-md-4"><label for="no_induk" class="form-label">No. Induk</label><input type="text" class="form-control" name="no_induk"></div>
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-primary">Simpan Buku</button>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Batal</a>
+        </div>
+    </form>
+{% endblock %}

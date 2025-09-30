@@ -1,0 +1,31 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Edit Buku{% endblock %}
+{% block admin_content %}
+    <h2>Edit Data Buku</h2>
+    <hr>
+    <form method="post" class="row g-3">
+        <div class="col-md-12"><label for="judul_buku" class="form-label">Judul Buku</label><input type="text" class="form-control" name="judul_buku" value="{{ buku.judul_buku }}" required></div>
+        <div class="col-md-6"><label for="pengarang" class="form-label">Pengarang</label><input type="text" class="form-control" name="pengarang" value="{{ buku.pengarang }}"></div>
+        <div class="col-md-6"><label for="penerbit" class="form-label">Penerbit</label><input type="text" class="form-control" name="penerbit" value="{{ buku.penerbit }}"></div>
+        <div class="col-md-6"><label for="tempat_terbit" class="form-label">Tempat Terbit</label><input type="text" class="form-control" name="tempat_terbit" value="{{ buku.tempat_terbit }}"></div>
+        <div class="col-md-6"><label for="tahun" class="form-label">Tahun</label><input type="text" class="form-control" name="tahun" value="{{ buku.tahun }}"></div>
+        <div class="col-12"><label for="isbn" class="form-label">ISBN</label><input type="text" class="form-control" name="isbn" value="{{ buku.isbn }}"></div>
+        <div class="col-md-4"><label for="jilid" class="form-label">Jilid</label><input type="text" class="form-control" name="jilid" value="{{ buku.jilid }}"></div>
+        <div class="col-md-4"><label for="edisi" class="form-label">Edisi</label><input type="text" class="form-control" name="edisi" value="{{ buku.edisi }}"></div>
+        <div class="col-md-4"><label for="cetakan" class="form-label">Cetakan</label><input type="text" class="form-control" name="cetakan" value="{{ buku.cetakan }}"></div>
+        <div class="col-md-4"><label for="jumlah_halaman" class="form-label">Jumlah Halaman</label><input type="text" class="form-control" name="jumlah_halaman" value="{{ buku.jumlah_halaman }}"></div>
+        <div class="col-md-4"><label for="rak_buku" class="form-label">Rak Buku</label><input type="text" class="form-control" name="rak_buku" value="{{ buku.rak_buku }}"></div>
+        <div class="col-md-4"><label for="jumlah_buku" class="form-label">Jumlah Buku</label><input type="text" class="form-control" name="jumlah_buku" value="{{ buku.jumlah_buku }}"></div>
+        <div class="col-md-4"><label for="tinggi_buku" class="form-label">Tinggi Buku (cm)</label><input type="text" class="form-control" name="tinggi_buku" value="{{ buku.tinggi_buku }}"></div>
+        <div class="col-md-4"><label for="nomor_panggil" class="form-label">Nomor Panggil</label><input type="text" class="form-control" name="nomor_panggil" value="{{ buku.nomor_panggil }}"></div>
+        <div class="col-md-4"><label for="inisial" class="form-label">Inisial</label><input type="text" class="form-control" name="inisial" value="{{ buku.inisial }}"></div>
+        <div class="col-md-4"><label for="perolehan" class="form-label">Perolehan</label><input type="text" class="form-control" name="perolehan" value="{{ buku.perolehan }}"></div>
+        <div class="col-md-4"><label for="harga" class="form-label">Harga</label><input type="text" class="form-control" name="harga" value="{{ buku.harga }}"></div>
+        <div class="col-md-4"><label for="keterangan" class="form-label">Keterangan</label><input type="text" class="form-control" name="keterangan" value="{{ buku.keterangan }}"></div>
+        <div class="col-md-4"><label for="no_induk" class="form-label">No. Induk</label><input type="text" class="form-control" name="no_induk" value="{{ buku.no_induk }}"></div>
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Batal</a>
+        </div>
+    </form>
+{% endblock %}

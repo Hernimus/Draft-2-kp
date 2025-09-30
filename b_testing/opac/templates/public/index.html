@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Pencarian Buku{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1>Selamat Datang di Katalog Perpustakaan</h1>
+        <p class="lead">Silakan cari buku berdasarkan judul atau pengarang di bawah ini.</p>
+    </div>
+    
+    <form action="{{ url_for('public.halaman_hasil_pencarian') }}" method="get" class="mt-4">
+        <div class="input-group mb-3">
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="Contoh: Hukum Pidana...">
+            <button class="btn btn-primary" type="submit">Cari Buku</button>
+        </div>
+    </form>
+{% endblock %}
