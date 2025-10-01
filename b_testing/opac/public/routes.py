@@ -35,13 +35,18 @@ def login():
         username = request.form['username']
         password = request.form['password']
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM pengguna WHERE username = ?', (username,)).fetchone()
+        user = conn.execute('SELECT * FROM admin WHERE username = ?', (username,)).fetchone()
         conn.close()
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
-            return redirect(url_for('admin.admin_dashboard')) # Arahkan ke blueprint admin
+            # If AJAX request, return JSON
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"success": True, "redirect": "/admin"})
+            return redirect(url_for('admin.admin_dashboard'))
         else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"success": False, "error": "Username atau password salah."}), 401
             flash("Username atau password salah.", "danger")
     return render_template('public/login.html')
 

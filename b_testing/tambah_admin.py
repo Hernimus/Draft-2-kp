@@ -9,10 +9,10 @@ NAMA_DATABASE = "perpustakaan.db"
 conn = sqlite3.connect(NAMA_DATABASE)
 cursor = conn.cursor()
 
-# 1. Buat tabel 'pengguna' jika belum ada
-print("Membuat tabel 'pengguna'...")
+# 1. Buat tabel 'admin' jika belum ada
+print("Membuat tabel 'admin'...")
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS pengguna (
+    CREATE TABLE IF NOT EXISTS admin (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
@@ -31,11 +31,11 @@ hashed_password = generate_password_hash(password)
 # 4. Masukkan data admin baru ke tabel
 try:
     cursor.execute(
-        'INSERT INTO pengguna (username, password) VALUES (?, ?)',
+        'INSERT INTO admin (username, password) VALUES (?, ?)',
         (username, hashed_password)
     )
     conn.commit()
-    print(f"\nBerhasil! Pengguna admin '{username}' telah dibuat.")
+    print(f"\nBerhasil! Admin '{username}' telah dibuat.")
 except sqlite3.IntegrityError:
     print(f"\nError: Username '{username}' sudah ada. Silakan jalankan lagi dengan username lain.")
 

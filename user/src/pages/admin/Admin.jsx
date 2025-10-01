@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Button, Modal, Form, Table, Card, Pagination, ButtonGroup } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Form, Table, Card, Pagination, ButtonGroup, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../katalog/Katalog.css";
 
@@ -18,6 +18,25 @@ const orderOptions = [
 ];
 
 function Admin() {
+  // ...existing code...
+  // Helper to reload data
+  const reloadData = () => {
+    let url = `http://localhost:5000/api/katalog?page=${page}&limit=${limit}`;
+    if (query) url += `&q=${encodeURIComponent(query)}`;
+    if (rakFilter) url += `&rak=${encodeURIComponent(rakFilter)}`;
+    if (globalSortBy) url += `&sort=${globalSortBy}&order=${globalSortOrder}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((json) => {
+        setData(json.data);
+        setTotalPages(json.total_pages);
+      })
+      .catch((err) => console.error("Error:", err));
+  };
+  // State for alerts
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [lastAction, setLastAction] = useState(''); // 'edit' or 'delete'
   // Local sort state for table header (client-side sort)
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -197,13 +216,13 @@ function Admin() {
         body: JSON.stringify(newBook)
       });
       if (res.ok) {
-        alert("Buku berhasil ditambahkan");
         setNewBook({
           judul_buku: "", pengarang: "", penerbit: "", tempat_terbit: "", tahun: "", isbn: "",
           jilid: "", edisi: "", cetakan: "", jumlah_halaman: "", rak_buku: "", jumlah_buku: "",
           tinggi_buku: "", nomor_panggil: "", inisial: "", perolehan: "", harga: "", keterangan: "", no_induk: ""
         });
-        setPage(1); // refresh data
+        setPage(1);
+        reloadData();
       } else {
         alert("Gagal tambah buku");
       }
@@ -227,37 +246,90 @@ function Admin() {
         body: JSON.stringify(editBook)
       });
       if (res.ok) {
-        alert("Buku berhasil diupdate");
+        setLastAction('edit');
+        setShowSuccessAlert(true);
+        setShowEditModal(false);
         setEditBook(null);
-        setPage(1); // refresh data
+        setPage(1);
+        reloadData();
       } else {
-        alert("Gagal update buku");
+        setLastAction('edit');
+        setShowErrorAlert(true);
       }
     } catch (err) {
-      alert("Error: " + err);
+      setLastAction('edit');
+      setShowErrorAlert(true);
     }
+    setTimeout(() => setShowSuccessAlert(false), 2500);
+    setTimeout(() => setShowErrorAlert(false), 2500);
   };
 
-  // Handler hapus buku
-  const handleDelete = async (row) => {
-    if (window.confirm(`Yakin ingin menghapus buku '${row.judul_buku}'?`)) {
-      try {
-        const res = await fetch(`http://localhost:5000/admin/api/buku/${row.id}`, {
-          method: "DELETE"
-        });
-        if (res.ok) {
-          alert("Buku berhasil dihapus");
-          setPage(1); // refresh data
-        } else {
-          alert("Gagal hapus buku");
-        }
-      } catch (err) {
-        alert("Error: " + err);
+  // State for delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteBook, setDeleteBook] = useState(null);
+
+  // Show modal when Hapus is clicked
+  const handleDelete = (row) => {
+    setDeleteBook(row);
+    setShowDeleteModal(true);
+  };
+
+  // Confirm delete
+  const confirmDelete = async () => {
+    if (!deleteBook) return;
+    try {
+      const res = await fetch(`http://localhost:5000/admin/api/buku/${deleteBook.id}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setLastAction('delete');
+        setShowSuccessAlert(true);
+        setPage(1);
+        reloadData();
+      } else {
+        setLastAction('delete');
+        setShowErrorAlert(true);
       }
+    } catch (err) {
+      setLastAction('delete');
+      setShowErrorAlert(true);
     }
+    setShowDeleteModal(false);
+    setDeleteBook(null);
+    setTimeout(() => setShowSuccessAlert(false), 2500);
+    setTimeout(() => setShowErrorAlert(false), 2500);
+  };
+
+  // Cancel delete
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteBook(null);
   };
 
   return (
+    <>
+    {/* Floating Alerts */}
+    <div style={{
+      position: 'fixed',
+      top: 20,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 1050,
+      minWidth: 300,
+      maxWidth: '90vw',
+      pointerEvents: 'none'
+    }}>
+      {showSuccessAlert && (
+        <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible style={{ pointerEvents: 'auto' }}>
+          {lastAction === 'edit' ? 'Buku berhasil diupdate' : 'Buku berhasil dihapus'}
+        </Alert>
+      )}
+      {showErrorAlert && (
+        <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible style={{ pointerEvents: 'auto' }}>
+          {lastAction === 'edit' ? 'Gagal update buku' : 'Gagal menghapus buku'}
+        </Alert>
+      )}
+    </div>
     <Container className="py-4">
       <h2 className="mb-3">📚 Daftar Katalog Buku (Admin)</h2>
       <Row className="mb-3 justify-content-end">
@@ -490,6 +562,28 @@ function Admin() {
         </Col>
       </Row>
     </Container>
+      {/* Delete Confirmation Modal */}
+  <Modal show={showDeleteModal} onHide={cancelDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus Buku</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {deleteBook && (
+            <span>
+              Yakin ingin menghapus buku '<b>{deleteBook.judul_buku}</b>'?
+            </span>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Hapus
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
 

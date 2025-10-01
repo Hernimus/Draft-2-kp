@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 app.config['SECRET_KEY'] = 'kunci-rahasia-yang-sangat-sulit-ditebak'
 
 # Izinkan akses dari React (localhost:3000)
