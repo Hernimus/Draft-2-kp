@@ -4,12 +4,14 @@ import "./Katalog.css";
 function Katalog() {
   const [data, setData] = useState([]);
   const [query, setQuery] = useState("");
-  const [rakFilter, setRakFilter] = useState(""); // ✅ filter rak
-  const [rakList, setRakList] = useState([]); // ✅ daftar rak unik
+  const [rakFilter, setRakFilter] = useState("");
+  const [rakList, setRakList] = useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [sortBy, setSortBy] = useState("id");
+  const [order, setOrder] = useState("asc");
 
   // 🔹 Ambil daftar rak dari backend
   useEffect(() => {
@@ -21,18 +23,17 @@ function Katalog() {
 
   // 🔹 Ambil data katalog
   useEffect(() => {
-    let url = `http://localhost:5000/api/katalog?page=${page}&limit=${limit}`;
-    if (query) url += `&q=${encodeURIComponent(query)}`;
-    if (rakFilter) url += `&rak=${encodeURIComponent(rakFilter)}`;
-
+    let url = `http://localhost:5000/api/katalog?page=${page}&per_page=${limit}&sort_by=${sortBy}&order=${order}`;
+    if (rakFilter) url += `&rak_filter=${encodeURIComponent(rakFilter)}`;
     fetch(url)
       .then((res) => res.json())
       .then((json) => {
         setData(json.data);
-        setTotalPages(json.total_pages);
+        // Calculate total pages from total and per_page
+        setTotalPages(Math.ceil(json.total / limit));
       })
       .catch((err) => console.error("Error:", err));
-  }, [query, rakFilter, page, limit]);
+  }, [rakFilter, page, limit, sortBy, order]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -94,62 +95,93 @@ function Katalog() {
       <h2>📚 Daftar Katalog Buku</h2>
 
       <div className="filter-bar">
-  <div className="limit-container">
-    <label>
-      Tampilkan:
-      <select
-        className="limit-select"
-        value={limit}
-        onChange={(e) => {
-          setLimit(Number(e.target.value));
-          setPage(1);
-        }}
-      >
-        <option value={25}>25</option>
-        <option value={50}>50</option>
-        <option value={75}>75</option>
-        <option value={100}>100</option>
-      </select>
-      data
-    </label>
-  </div>
+        <div className="limit-container">
+          <label>
+            Tampilkan:
+            <select
+              className="limit-select"
+              value={limit}
+              onChange={(e) => {
+                setLimit(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={75}>75</option>
+              <option value={100}>100</option>
+            </select>
+            data
+          </label>
+        </div>
 
-  {/* 🔹 Dropdown RAK */}
-  <div className="rak-container">
-    <label>
-      Rak:
-      <select
-  className="rak-select"
-  value={rakFilter}
-  onChange={(e) => {
-    setRakFilter(e.target.value);
-    setPage(1);
-  }}
->
-  <option value="">Semua Rak</option>
-  {rakList.map((rak, idx) => (
-    <option key={idx} value={rak.value}>
-      {rak.label}   {/* 🔹 jangan pakai rak.value */}
-    </option>
-  ))}
-</select>
+        {/* 🔹 Dropdown RAK */}
+        <div className="rak-container">
+          <label>
+            Rak:
+            <select
+              className="rak-select"
+              value={rakFilter}
+              onChange={(e) => {
+                setRakFilter(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">Semua Rak</option>
+              {rakList.map((rak, idx) => (
+                <option key={idx} value={rak.value}>
+                  {rak.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
+        {/* 🔹 Dropdown Sort */}
+        <div className="sort-container">
+          <label>
+            Urutkan:
+            <select
+              className="sort-select"
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="id">Default</option>
+              <option value="judul_buku">Judul Buku</option>
+              <option value="pengarang">Pengarang</option>
+              <option value="penerbit">Penerbit</option>
+              <option value="tahun">Tahun</option>
+              <option value="rak_buku">Rak</option>
+            </select>
+            <select
+              className="order-select"
+              value={order}
+              onChange={(e) => {
+                setOrder(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="asc">Naik</option>
+              <option value="desc">Turun</option>
+            </select>
+          </label>
+        </div>
 
-    </label>
-  </div>
-
-  {/* 🔹 Input pencarian */}
-  <input
-    type="text"
-    placeholder="Cari judul, pengarang, atau ISBN..."
-    value={query}
-    onChange={(e) => {
-      setQuery(e.target.value);
-      setPage(1);
-    }}
-    className="search-input"
-  />
-</div>
+        {/* 🔹 Input pencarian */}
+        <input
+          type="text"
+          placeholder="Cari judul, pengarang, atau ISBN..."
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+          className="search-input"
+        />
+      </div>
 
 
 
@@ -161,7 +193,7 @@ function Katalog() {
             <th>Penerbit</th>
             <th>Tahun</th>
             <th>Rak</th>
-            <th>Detail</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -178,7 +210,7 @@ function Katalog() {
                     className="detail-btn"
                     onClick={() => setSelectedBook(row)}
                   >
-                    Lihat
+                    Detail
                   </button>
                 </td>
               </tr>

@@ -1,3 +1,19 @@
+/* Force hide Mantine ComboboxChevron chevron by class and data attribute */
+svg.mantine-ComboboxChevron-chevron[data-combobox-chevron="true"] {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+/* Hide Mantine Select Chevron globally */
+.mantine-Select-chevron {
+  display: none !important;
+}
+/* Hide Mantine Combobox Chevron globally */
+.mantine-ComboboxChevron-chevron {
+  display: none !important;
+}
 .App {
   text-align: center;
 }
